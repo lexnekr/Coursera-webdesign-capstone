@@ -2,6 +2,8 @@
 
 original - http://alexomb.eu/omb/en/
 
+my project - https://lexnekr.github.io/Coursera-webdesign-capstone/index.html (GithubPages)
+
 ## Prototipes
 
 **Mobile:**
