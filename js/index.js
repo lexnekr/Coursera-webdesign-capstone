@@ -1,50 +1,63 @@
+if ($(document).width()>768) {
+$('#myModal').on('show.bs.modal', function (event) {
+  console.log($(document).width());
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var modal = $(this)
+  modal.find('.modal-title').text(button[0].title)
+  var image = modal.find('.modal-body img')
+  image.attr("alt", button[0].title);
+  image.attr("title", button[0].title);
+  image.attr("src", button[0].src);
+})
+}
+
 Share = {
     /**
-     * Ïîêàçàòü ïîëüçîâàòåëþ äèëîã øàðèíãà â ñîîâåòñòâèè ñ îïöèÿìè
-     * Ìåòîä äëÿ èñïîëüçîâàíèÿ â inline-js â ññûëêàõ
-     * Ïðè áëîêèðîâêå âñïëûâàþùåãî îêíà ïîäñòàâèò íóæíûé àäðåñ è ïîëçâîëèò áðàóçåðó ïåðåéòè ïî íåìó
+     * Показать пользователю дилог шаринга в сооветствии с опциями
+     * Метод для использования в inline-js в ссылках
+     * При блокировке всплывающего окна подставит нужный адрес и ползволит браузеру перейти по нему
      *
      * @example <a href="" onclick="return share.go(this)">like+</a>
      *
-     * @param Object _element - ýëåìåíò DOM, äëÿ êîòîðîãî
-     * @param Object _options - îïöèè, âñå íåîáÿçàòåëüíû
+     * @param Object _element - элемент DOM, для которого
+     * @param Object _options - опции, все необязательны
      */
     go: function(_element, _options) {
         var
             self = Share,
             options = $.extend(
                 {
-                    type:       'vk',    // òèï ñîöñåòè
-                    url:        location.href,  // êàêóþ ññûëêó øàðèì
-                    count_url:  location.href,  // äëÿ êàêîé ññûëêè êðóòèì ñ÷¸ò÷èê
-                    title:      document.title, // çàãîëîâîê øàðèíãà
-                    image:        '',             // êàðòèíêà øàðèíãà
-                    text:       '',             // òåêñò øàðèíãà
+                    type:       'vk',    // тип соцсети
+                    url:        location.href,  // какую ссылку шарим
+                    count_url:  location.href,  // для какой ссылки крутим счётчик
+                    title:      document.title, // заголовок шаринга
+                    image:        '',             // картинка шаринга
+                    text:       '',             // текст шаринга
                 },
-                $(_element).data(), // Åñëè ïàðàìåòðû çàäàíû â data, òî ÷èòàåì èõ
-                _options            // Ïàðàìåòðû èç âûçîâà ìåòîäà èìåþò íàèâûñøèé ïðèîðèòåò
+                $(_element).data(), // Если параметры заданы в data, то читаем их
+                _options            // Параметры из вызова метода имеют наивысший приоритет
             );
 
         if (self.popup(link = self[options.type](options)) === null) {
-            // Åñëè íå óäàëîñü îòêðûòü ïîïàï
+            // Если не удалось открыть попап
             if ( $(_element).is('a') ) {
-                // Åñëè ýòî <a>, òî ïîäñòàâëÿåì àäðåñ è ïðîñèì áðàóçåð ïðîäîëæèòü ïåðåõîä ïî ññûëêå
+                // Если это <a>, то подставляем адрес и просим браузер продолжить переход по ссылке
                 $(_element).prop('href', link);
                 return true;
             }
             else {
-                // Åñëè ýòî íå <a>, òî ïûòàåìñÿ ïåðåéòè ïî àäðåñó
+                // Если это не <a>, то пытаемся перейти по адресу
                 location.href = link;
                 return false;
             }
         }
         else {
-            // Ïîïàï óñïåøíî îòêðûò, ïðîñèì áðàóçåð íå ïðîäîëæàòü îáðàáîòêó
+            // Попап успешно открыт, просим браузер не продолжать обработку
             return false;
         }
     },
 
-    // ÂÊîíòàêòå
+    // ВКонтакте
     vk: function(_options) {
         var options = $.extend({
                 url:    location.href,
@@ -61,7 +74,7 @@ Share = {
             + '&noparse=true';
     },
 
-    // Îäíîêëàññíèêè
+    // Одноклассники
     ok: function(_options) {
         var options = $.extend({
                 url:    location.href,
@@ -89,7 +102,7 @@ Share = {
             + '&p[images][0]=' + encodeURIComponent(options.image);
     },
 
-    // Æèâîé Æóðíàë
+    // Живой Журнал
     lj: function(_options) {
         var options = $.extend({
                 url:    location.href,
@@ -103,7 +116,7 @@ Share = {
             + '&transform=1';
     },
 
-    // Òâèòòåð
+    // Твиттер
     tw: function(_options) {
         var options = $.extend({
                 url:        location.href,
@@ -142,13 +155,13 @@ Share = {
 			+ encodeURIComponent(options.url);
 	},
 
-    // Îòêðûòü îêíî øàðèíãà
+    // Открыть окно шаринга
     popup: function(url) {
         return window.open(url,'','toolbar=0,status=0,scrollbars=1,width=626,height=436');
     }
 }
 
-// Âñå ýëåìåíòû êëàññà .social_share ñ÷èòàåì êíîïêàìè øàðèíãà
+// Все элементы класса .social_share считаем кнопками шаринга
 $(document).on('click', '.social_share', function(){
     Share.go(this);
 });
